@@ -37,6 +37,10 @@ class GetPacientPorId(Resource):
     
     def delete(self, id):
         patient = Patient.query.filter(Patient.id == id).first()
+
+        if(patient == None):
+            return { "message": "Paciente inválido." }, 404
+        
         db.session.delete(patient)
         db.session.commit()
         return { "message": "Excluído com êxito" }, 202 ## OK

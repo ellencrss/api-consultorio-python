@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask import request
-from models import Doctor
+from models import Doctor, Patient
 from schemas import DoctorSchema, DoctorSchemaAlteracao
 from resources import db, validate_pattern_crm, validate_pattern_crm_uf
 import re
@@ -40,6 +40,12 @@ class GetMedicoPorId(Resource):
     
     def delete(self, id):
         doctor = Doctor.query.filter(Doctor.id == id).first()
+
+        patients = Patient.query.filter(Patient.id_doctor == id).first()
+
+        if(patients != None):
+            return { "message": "Erro. Não é possível excluir médicos com pacientes associados"}, 405
+
         db.session.delete(doctor)
         db.session.commit()
         return { "message": "Excluído com êxito" }, 202 ## OK
